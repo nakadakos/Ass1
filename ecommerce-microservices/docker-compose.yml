@@ -1,0 +1,39 @@
+services:
+  gateway:
+    build: ./gateway
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-8081}:5000"
+    environment:
+      PRODUCT_URL: http://product-service:5001
+      CART_URL: http://cart-service:5002
+      ORDER_URL: http://order-service:5003
+    depends_on:
+      - product-service
+      - cart-service
+      - order-service
+  product-service:
+    build: ./product-service
+    restart: unless-stopped
+    environment:
+      DB_PATH: /data/products.db
+    volumes:
+      - product-data:/data
+  cart-service:
+    build: ./cart-service
+    restart: unless-stopped
+    environment:
+      DB_PATH: /data/cart.db
+    volumes:
+      - cart-data:/data
+  order-service:
+    build: ./order-service
+    restart: unless-stopped
+    environment:
+      DB_PATH: /data/orders.db
+    volumes:
+      - order-data:/data
+volumes:
+  product-data:
+  cart-data:
+  order-data:
